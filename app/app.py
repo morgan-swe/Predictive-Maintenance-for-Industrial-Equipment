@@ -1,5 +1,13 @@
 import streamlit as st
 
+from predict import (
+    MODELS,
+    load_features,
+    load_metrics,
+    load_model,
+    predict_for_engine,
+)
+
 # Page config
 # This controls: Browser tab title, Browser icon, Page width
 # Wide gives us more room for charts
@@ -20,34 +28,52 @@ st.divider()
 
 # Sidebar
 st.sidebar.title("System Information")
-st.sidebar.write(
-    "Model: Random Forest Regressor"
+selected_model_name = st.sidebar.selectbox(
+    "Model",
+    list(MODELS.keys())
 )
 st.sidebar.write(
     "Dataset: NASA CMAPSS FD001"
 )
 
+# Loading the model and feature table is slow, so cache both.
+# Streamlit reruns this whole script on every interaction.
+@st.cache_resource
+def get_model(name):
+    return load_model(name)
+
+@st.cache_data
+def get_features():
+    return load_features()
+
+model = get_model(selected_model_name)
+data = get_features()
+
 # Model Performance section
 st.header("Model Performance")
 col1, col2, col3 = st.columns(3)
 
+# Metrics for whichever model is selected in the sidebar
+metrics = load_metrics(selected_model_name)
+
 with col1:
-    st.metric("MAE", "10.23 cycles")
+    st.metric("MAE", f"{metrics['MAE']:.2f} cycles")
 
 with col2:
-    st.metric("RMSE", "15.23 cycles")
+    st.metric("RMSE", f"{metrics['RMSE']:.2f} cycles")
 
 with col3:
-    st.metric("R²", "0.867")
+    st.metric("R²", f"{metrics['R2']:.3f}")
 
 # Engine selection section
 st.header("Engine Analysis")
-engines = list(range(1, 101))
+engines = sorted(data["unit_number"].unique())
 
 selected_engine = st.selectbox(
     "Select an engine",
     engines
 )
 
-# Displaying the section
-st.write(f"Selected Engine: {selected_engine}")
+# Predicted remaining useful life at the engine's latest cycle
+predicted_rul = predict_for_engine(model, data, selected_engine)
+st.metric("Predicted RUL", f"{predicted_rul:.1f} cycles")

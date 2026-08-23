@@ -1,6 +1,15 @@
 table Predictions
 	lineageTag: 061d0a32-1653-48ba-8a23-d5c6ed559963
 
+	column Engine_ID
+		dataType: int64
+		formatString: 0
+		lineageTag: 4651baa0-354a-41c7-afe7-df1718b47e7d
+		summarizeBy: none
+		sourceColumn: Engine_ID
+
+		annotation SummarizationSetBy = Automatic
+
 	column Actual_RUL
 		dataType: int64
 		formatString: 0
@@ -52,9 +61,9 @@ table Predictions
 		mode: import
 		source =
 				let
-				  Source = Csv.Document(Web.Contents("https://uofc-my.sharepoint.com/personal/morgan_lee2_ucalgary_ca/Documents/Apps/Microsoft Power Query/Uploaded Files/dashboard_predictions.csv"), [Delimiter = ",", Columns = 5, QuoteStyle = QuoteStyle.None]),
+				  Source = Csv.Document(Web.Contents("https://uofc-my.sharepoint.com/personal/morgan_lee2_ucalgary_ca/Documents/Apps/Microsoft Power Query/Uploaded Files/dashboard_predictions.csv"), [Delimiter = ",", Columns = 6, QuoteStyle = QuoteStyle.None]),
 				  #"Promoted headers" = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"Actual_RUL", Int64.Type}, {"Predicted_RUL", type number}, {"Error", type number}, {"Absolute_Error", type number}, {"Risk_Level", type text}})
+				  #"Changed column type" = Table.TransformColumnTypes(#"Promoted headers", {{"Engine_ID", Int64.Type}, {"Actual_RUL", Int64.Type}, {"Predicted_RUL", type number}, {"Error", type number}, {"Absolute_Error", type number}, {"Risk_Level", type text}})
 				in
 				  #"Changed column type"
 

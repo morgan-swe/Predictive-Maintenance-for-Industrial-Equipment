@@ -86,8 +86,8 @@ src/              Data loading and config
 Notebooks run in order:
 
 1. `01_data_overview.ipynb` Dataset profiling, sensor variance, correlation analysis
-2. `05_feature_engineering.ipynb` Target construction, rolling and trend features, leakage safe split
-3. `06_model_training.ipynb` Training, tuning, feature importance, error analysis, dashboard exports
+2. `02_feature_engineering.ipynb` Target construction, rolling and trend features, leakage safe split
+3. `03_model_training.ipynb` Training, tuning, feature importance, error analysis, dashboard exports
 
 ## Setup
 
@@ -106,7 +106,7 @@ Python, pandas, NumPy, scikit-learn, matplotlib, seaborn, Streamlit, Power BI, J
 
 ## Next steps
 
-- Move the notebook logic into the `src/` modules so the whole pipeline runs end to end from the command line. Right now `src/load_data.py` handles raw loading and validation, and the rest of the analysis lives in the notebooks.
+- Move the notebook logic into dedicated `src/` modules (feature engineering, preprocessing, training, evaluation) so the whole pipeline runs end to end from the command line. Right now `src/load_data.py` handles raw loading and validation, and the rest of the analysis lives in the notebooks.
 - Score models with an asymmetric metric that penalises over prediction harder than under prediction, since the two carry very different operational costs.
 - Rank at the engine level rather than the row level, which the error analysis showed is the more useful unit of comparison.
 - Validate against FD002 to FD004, which add multiple operating conditions and fault modes and are closer to how real equipment behaves.

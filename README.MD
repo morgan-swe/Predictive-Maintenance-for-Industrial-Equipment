@@ -6,7 +6,7 @@ Built on the NASA C-MAPSS FD001 turbofan dataset, but the problem is the same on
 
 The alternative to prediction is either fixed maintenance schedules, which service healthy equipment for no reason, or running to failure, which is worse. This project asks whether continuous sensor data can tell you which units actually need attention and when.
 
-**Final result: the model predicts remaining life within about 10 operating cycles on average, roughly 5% of a typical engine's lifespan, at an R² of 0.865.**
+**Final result: the model predicts remaining life within about 10 operating cycles on average, roughly 5% of a typical engine's lifespan, at an R² of 0.867.**
 
 ## Results
 
@@ -16,10 +16,10 @@ Four models, all trained on 80 engines and tested on 20 engines they had never s
 | ---------------------------- | ------------ | ------------- | --------- |
 | Linear Regression (baseline) | 14.17        | 17.65         | 0.821     |
 | Decision Tree                | 11.63        | 17.11         | 0.832     |
-| **Random Forest**            | **10.29**    | **15.34**     | **0.865** |
-| Random Forest (tuned)        | 10.23        | 15.23         | 0.867     |
+| Random Forest                | 10.29        | 15.34         | 0.865     |
+| **Random Forest (tuned)**    | **10.23**    | **15.23**     | **0.867** |
 
-A 108 combination GridSearchCV run with 5 fold cross validation improved MAE by only 0.06 cycles. Since the two forests were effectively tied, the untuned Random Forest was chosen as the production model: same accuracy, cheaper to train and serve. Tuning was still worth running, because knowing a model has hit its ceiling is a result.
+A 108 combination GridSearchCV run with 5 fold cross validation improved MAE by only 0.06 cycles. Since the two forests were effectively tied on accuracy, the tuned Random Forest was chosen as the production model because its shallower trees make it about a fifth the size on disk (17MB vs 80MB), so it is cheaper to store and serve. Tuning was still worth running, because knowing a model has hit its ceiling is a result.
 
 ![Model comparison](reports/figures/model_comparison.png)
 

@@ -12,7 +12,6 @@ MODEL_RESULTS = ROOT / "dashboard" / "data" / "model_results.csv"
 # Available models, keyed by the name we show in the UI
 MODELS = {
     "Random Forest (tuned)": "random_forest_tuned.pkl",
-    "Random Forest": "random_forest_model.pkl",
     "Decision Tree": "decision_tree_model.pkl",
     "Linear Regression": "linear_regression_model.pkl",
 }
@@ -22,7 +21,6 @@ MODELS = {
 # UI names above, so map between them explicitly.
 RESULTS_NAMES = {
     "Random Forest (tuned)": "Random Forest (Tuned)",
-    "Random Forest": "Random forest",
     "Decision Tree": "Decision Tree",
     "Linear Regression": "Linear Regression",
 }

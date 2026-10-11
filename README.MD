@@ -6,18 +6,18 @@ Built on the NASA C-MAPSS FD001 turbofan dataset, but the problem is the same on
 
 The alternative to prediction is either fixed maintenance schedules, which service healthy equipment for no reason, or running to failure, which is worse. This project asks whether continuous sensor data can tell you which units actually need attention and when.
 
-**Final result: the model predicts remaining life within about 10 operating cycles on average, roughly 5% of a typical engine's lifespan, at an R² of 0.87.**
+**Final result: the model predicts remaining life within about 10 operating cycles on average, roughly 5% of a typical engine's lifespan, at an R² of 0.865.**
 
 ## Results
 
 Four models, all trained on 80 engines and tested on 20 engines they had never seen. Error is in operating cycles, against an average engine lifetime of 206 cycles.
 
-| Model | MAE (cycles) | RMSE (cycles) | R² |
-|---|---|---|---|
-| Linear Regression (baseline) | 14.17 | 17.65 | 0.821 |
-| Decision Tree | 11.63 | 17.11 | 0.832 |
-| **Random Forest** | **10.29** | **15.34** | **0.865** |
-| Random Forest (tuned) | 10.23 | 15.23 | 0.867 |
+| Model                        | MAE (cycles) | RMSE (cycles) | R²        |
+| ---------------------------- | ------------ | ------------- | --------- |
+| Linear Regression (baseline) | 14.17        | 17.65         | 0.821     |
+| Decision Tree                | 11.63        | 17.11         | 0.832     |
+| **Random Forest**            | **10.29**    | **15.34**     | **0.865** |
+| Random Forest (tuned)        | 10.23        | 15.23         | 0.867     |
 
 A 108 combination GridSearchCV run with 5 fold cross validation improved MAE by only 0.06 cycles. Since the two forests were effectively tied, the untuned Random Forest was chosen as the production model: same accuracy, cheaper to train and serve. Tuning was still worth running, because knowing a model has hit its ceiling is a result.
 
@@ -29,13 +29,13 @@ The parts of this project I would want to talk about in an interview.
 
 **Only one kind of feature earned its keep.** I generated 63 engineered features across three families and then grouped them by type to see which style of feature engineering paid off:
 
-| Feature type | Count | Total importance |
-|---|---|---|
-| Rolling mean | 21 | 0.840 |
-| Time and operational settings | 4 | 0.145 |
-| Raw sensor | 21 | 0.013 |
-| Rolling standard deviation | 21 | 0.002 |
-| Trend (cycle over cycle change) | 21 | 0.0001 |
+| Feature type                    | Count | Total importance |
+| ------------------------------- | ----- | ---------------- |
+| Rolling mean                    | 21    | 0.840            |
+| Time and operational settings   | 4     | 0.145            |
+| Raw sensor                      | 21    | 0.013            |
+| Rolling standard deviation      | 21    | 0.002            |
+| Trend (cycle over cycle change) | 21    | 0.0001           |
 
 Rolling means carried 84% of the predictive signal. Rolling standard deviation and trend features contributed almost nothing, and the reason matters: both are built to detect erratic, jumpy behaviour, and degradation in this dataset is a slow steady drift. Rolling std is the right tool for a bearing that starts vibrating unevenly before its average shifts. That failure mode just isn't in this data. A feature is a question you ask the data, and it only pays off when the question matches the real failure mechanism.
 

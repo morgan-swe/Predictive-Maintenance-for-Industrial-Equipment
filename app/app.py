@@ -4,6 +4,7 @@ from predict import (
     MODELS,
     load_features,
     load_metrics,
+    held_out_engines,
     load_model,
     predict_for_engine,
 )
@@ -67,13 +68,37 @@ with col3:
 
 # Engine selection section
 st.header("Engine Analysis")
-engines = sorted(data["unit_number"].unique())
+st.write(
+    "These 20 engines were held out from training. Each one ran until it "
+    "failed, so move the slider to replay its life and compare the "
+    "prediction with the cycles it actually had left."
+)
+engines = held_out_engines(data)
 
 selected_engine = st.selectbox(
     "Select an engine",
     engines
 )
 
-# Predicted remaining useful life at the engine's latest cycle
-predicted_rul = predict_for_engine(model, data, selected_engine)
-st.metric("Predicted RUL", f"{predicted_rul:.1f} cycles")
+engine_rows = data[data["unit_number"] == selected_engine]
+first_cycle = int(engine_rows["time_in_cycles"].min())
+last_cycle = int(engine_rows["time_in_cycles"].max())
+cycle = st.slider(
+    "Current cycle",
+    first_cycle,
+    last_cycle,
+    value=(first_cycle + last_cycle) // 2,
+)
+
+predicted_rul = predict_for_engine(model, data, selected_engine, cycle)
+actual_rul = int(engine_rows.loc[engine_rows["time_in_cycles"] == cycle, "RUL"].iloc[0])
+
+col1, col2 = st.columns(2)
+with col1:
+    st.metric("Predicted RUL", f"{predicted_rul:.1f} cycles")
+with col2:
+    st.metric("Actual RUL", f"{actual_rul} cycles")
+st.caption(
+    "The model was trained with RUL capped at 125 cycles, so early in an "
+    "engine's life it predicts about 125 even when more life remains."
+)

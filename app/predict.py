@@ -1,6 +1,7 @@
 import joblib
 import pandas as pd
 from pathlib import Path
+from sklearn.model_selection import GroupShuffleSplit
 
 # Project root, resolved from this file's location rather than the
 # working directory, so paths work no matter where we launch from.
@@ -67,13 +68,29 @@ def predict_rul(model, df):
     return model.predict(align_features(model, df))
 
 
-# Predict RUL for one engine's most recent cycle
-def predict_for_engine(model, df, unit_number):
+# The 20 engines held out from training. Uses the same split as
+# notebooks/03_model_training.ipynb, so the app only shows engines
+# the model has never seen.
+def held_out_engines(df):
+    splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
+    _, test_idx = next(splitter.split(df, groups=df["unit_number"]))
+    return sorted(df["unit_number"].iloc[test_idx].unique())
+
+
+# Predict RUL for one engine at a given cycle (default: its last cycle).
+# Training engines run to failure, so the last cycle is always ~0 RUL;
+# pick an earlier cycle to see the model mid-life.
+def predict_for_engine(model, df, unit_number, cycle=None):
     engine_rows = df[df["unit_number"] == unit_number]
     if engine_rows.empty:
         raise ValueError(f"No data for engine {unit_number}")
-    latest = engine_rows.sort_values("time_in_cycles").tail(1)
-    return float(predict_rul(model, latest)[0])
+    if cycle is None:
+        row = engine_rows.sort_values("time_in_cycles").tail(1)
+    else:
+        row = engine_rows[engine_rows["time_in_cycles"] == cycle]
+        if row.empty:
+            raise ValueError(f"Engine {unit_number} has no cycle {cycle}")
+    return float(predict_rul(model, row)[0])
 
 
 # Temp

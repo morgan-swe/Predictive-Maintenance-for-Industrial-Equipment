@@ -29,8 +29,6 @@ A 108 combination GridSearchCV run with 5 fold cross validation improved MAE by 
 
 ## What the analysis actually found
 
-The parts of this project I would want to talk about in an interview.
-
 **Only one kind of feature earned its keep.** I generated 63 engineered features across three families and then grouped them by type to see which style of feature engineering paid off:
 
 | Feature type                    | Count | Total importance |
@@ -107,10 +105,3 @@ Then run the notebooks in order, or launch the Streamlit app against the saved m
 ## Tech stack
 
 Python, pandas, NumPy, scikit-learn, matplotlib, seaborn, Streamlit, Power BI, Jupyter, Git
-
-## Next steps
-
-- Move the notebook logic into dedicated `src/` modules (feature engineering, preprocessing, training, evaluation) so the whole pipeline runs end to end from the command line. Right now `src/load_data.py` handles raw loading and validation, and the rest of the analysis lives in the notebooks.
-- Score models with an asymmetric metric that penalises over prediction harder than under prediction, since the two carry very different operational costs.
-- Rank at the engine level rather than the row level, which the error analysis showed is the more useful unit of comparison.
-- Validate against FD002 to FD004, which add multiple operating conditions and fault modes and are closer to how real equipment behaves.

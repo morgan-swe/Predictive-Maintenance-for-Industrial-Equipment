@@ -1,5 +1,9 @@
 # Predictive Maintenance for Rotating Industrial Equipment
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://predictive-maintenance-for-industrial-equipment-ml.streamlit.app/)
+
+**Live demo: https://predictive-maintenance-for-industrial-equipment-ml.streamlit.app/**
+
 Predicting how many operating cycles a machine has left before it fails, using sensor telemetry and machine learning.
 
 Built on the NASA C-MAPSS FD001 turbofan dataset, but the problem is the same one energy infrastructure companies deal with every day: compressors, pumps, and turbines running continuously along a pipeline or inside a plant, instrumented with dozens of sensors, where an unplanned failure is expensive and can carry real safety and environmental risk.
